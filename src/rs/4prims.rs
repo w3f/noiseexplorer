@@ -45,13 +45,15 @@ pub fn decrypt(k: [u8; DHLEN], n: u64, ad: &[u8], ciphertext: &[u8]) -> Option<V
 	}
 }
 
-pub fn hash(data: &[u8]) -> [u8; HASHLEN] {
-	let mut blake2s: Blake2s = Blake2s::new(HASHLEN);
-	blake2s.input(&data[..]);
-	let mut digest_res: [u8; HASHLEN] = EMPTY_HASH;
-	blake2s.result(&mut digest_res);
-	blake2s.reset();
-	digest_res
+pub fn hash(datas: &[&[u8]]) -> [u8; HASHLEN] {
+        let mut blake2s: Blake2s = Blake2s::new(HASHLEN);
+        for data in datas.into_iter() {
+                blake2s.input(&data[..]);
+        }
+        let mut digest_res: [u8; HASHLEN] = EMPTY_HASH;
+        blake2s.result(&mut digest_res);
+        blake2s.reset();
+        digest_res
 }
 
 pub fn hmac(key: &[u8], data: &[u8], out: &mut [u8]) {

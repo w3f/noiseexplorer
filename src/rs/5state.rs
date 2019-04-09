@@ -114,7 +114,7 @@ impl SymmetricState {
                 copy_slices!(protocol_name,&mut array);
                 array
         } else {
-                hash(protocol_name)
+                hash(&[protocol_name])
         });
         let ck: Hash = Hash::from_bytes(from_slice_hashlen(&h.as_bytes()[..]));
 		let cs: CipherState = CipherState::new();
@@ -138,9 +138,7 @@ impl SymmetricState {
 		self.cs = CipherState::from_key(Key::from_bytes(temp_k));
 	}
 	pub(crate) fn mix_hash(&mut self, data: &[u8]) {
-		let mut temp: Vec<u8> = Vec::from(&self.h.as_bytes()[..]);
-		temp.extend(data);
-		self.h = Hash::from_bytes(hash(&temp[..]));
+        self.h = Hash::from_bytes(hash(&[&self.h.as_bytes()[..], data]));
 	}
 	#[allow(dead_code)]
 	pub(crate) fn mix_key_and_hash(&mut self, input_key_material: &[u8]) {
