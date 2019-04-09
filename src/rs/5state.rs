@@ -169,14 +169,20 @@ impl SymmetricState {
 		self.mix_hash(&ciphertext);
 		Some(ciphertext)
 	}
+    // Do you mean to panic?
+    pub(crate) fn decrypt_and_hash(&mut self, ciphertext: &[u8]) -> Option<Vec<u8>> {
+            let plaintext = self.cs.decrypt_with_ad(&self.h.as_bytes()[..], &ciphertext).expect("Invalid ad");
+            self.mix_hash(ciphertext);
+            Some(plaintext)
+    }
+    // Or returning None what you meant?
+    /*
 	pub(crate) fn decrypt_and_hash(&mut self, ciphertext: &[u8]) -> Option<Vec<u8>> {
-		if let Some(plaintext) = self.cs.decrypt_with_ad(&self.h.as_bytes()[..], &ciphertext) {
-			self.mix_hash(ciphertext);
-			return Some(Vec::from(&plaintext[..]));
-		} else {
-			panic!("Invalid ad");
-		}
+		let plaintext = self.cs.decrypt_with_ad(&self.h.as_bytes()[..], &ciphertext) ?;
+	    self.mix_hash(ciphertext);
+		Some(plaintext)
 	}
+    */
 	pub(crate) fn split(&mut self) -> (CipherState, CipherState) {
 		let mut temp_k1: [u8; HASHLEN] = EMPTY_HASH;
 		let mut temp_k2: [u8; HASHLEN] = EMPTY_HASH;
