@@ -24,8 +24,7 @@ pub fn encrypt(k: [u8; DHLEN], n: u64, ad: &[u8], plaintext: &[u8]) -> Vec<u8> {
 		.nonce(&nonce)
 		.encrypt(&ad, &mut in_out[..], &mut mac);
 	let mut ciphertext: Vec<u8> = in_out;
-	let mut tag: Vec<u8> = Vec::from(&mac[..]);
-	ciphertext.append(&mut tag);
+	ciphertext.extend_from_slice(&mac[..]);
 	ciphertext
 }
 
@@ -48,13 +47,13 @@ pub fn decrypt(k: [u8; DHLEN], n: u64, ad: &[u8], ciphertext: &[u8]) -> Option<V
 	}
 }
 
-pub fn hash(data: &[u8]) -> Vec<u8> {
+pub fn hash(data: &[u8]) -> [u8; HASHLEN] {
 	let mut blake2s: Blake2s = Blake2s::new(HASHLEN);
 	blake2s.input(&data[..]);
-	let digest_res: &mut [u8] = &mut [0u8; HASHLEN];
-	blake2s.result(digest_res);
+	let mut digest_res = [0u8; HASHLEN];
+	blake2s.result(&mut digest_res);
 	blake2s.reset();
-	Vec::from(digest_res)
+	digest_res
 }
 
 pub fn hmac(key: &[u8], data: &[u8], out: &mut [u8]) {

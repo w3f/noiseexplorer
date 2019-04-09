@@ -126,9 +126,9 @@ impl SymmetricState {
 		SymmetricState { cs, ck, h }
 	}
 	pub(crate) fn mix_key(&mut self, input_key_material: &[u8]) {
-		let mut out0: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
-		let mut out1: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
-		let mut out2: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
+		let mut out0 = EMPTY_KEY;
+		let mut out1 = EMPTY_KEY;
+		let mut out2 = EMPTY_KEY;
 		hkdf(
 			&self.ck.as_bytes()[..],
 			input_key_material,
@@ -149,9 +149,9 @@ impl SymmetricState {
 	}
 	#[allow(dead_code)]
 	pub(crate) fn mix_key_and_hash(&mut self, input_key_material: &[u8]) {
-		let mut out0: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
-		let mut out1: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
-		let mut out2: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
+		let mut out0 = EMPTY_KEY;
+		let mut out1 = EMPTY_KEY;
+		let mut out2 = EMPTY_KEY;
 		hkdf(
 			&self.ck.as_bytes()[..],
 			input_key_material,
@@ -186,9 +186,9 @@ impl SymmetricState {
 		}
 	}
 	pub(crate) fn split(&mut self) -> (CipherState, CipherState) {
-		let mut temp_k1: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
-		let mut temp_k2: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
-		let mut out2: Vec<u8> = Vec::from(&EMPTY_KEY[..]);
+		let mut temp_k1 = EMPTY_KEY;
+		let mut temp_k2 = EMPTY_KEY;
+		let mut out2 = EMPTY_KEY;
 		hkdf(
 			&self.ck.as_bytes()[..],
 			&ZEROLEN[..],
