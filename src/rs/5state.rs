@@ -109,19 +109,14 @@ impl SymmetricState {
 		self.h.clear();
 	}
 	pub fn initialize_symmetric(protocol_name: &[u8]) -> SymmetricState {
-		let h: Hash;
-		match protocol_name.len() {
-			0..=31 => {
-				let mut temp = Vec::from(protocol_name);
-				while temp.len() != HASHLEN {
-					temp.push(0u8);
-				}
-				h = Hash::from_bytes(from_slice_hashlen(&temp[..]));
-			}
-			32 => h = Hash::from_bytes(from_slice_hashlen(protocol_name)),
-			_ => h = Hash::from_bytes(hash(protocol_name)),
-		}
-		let ck: Hash = Hash::from_bytes(from_slice_hashlen(&h.as_bytes()[..]));
+        let h: Hash = Hash::from_bytes(if protocol_name.len() <= 32 {
+                let mut array = [0u8; HASHLEN];
+                copy_slices!(protocol_name,&mut array);
+                array
+        } else {
+                hash(protocol_name)
+        });
+        let ck: Hash = Hash::from_bytes(from_slice_hashlen(&h.as_bytes()[..]));
 		let cs: CipherState = CipherState::new();
 		SymmetricState { cs, ck, h }
 	}
