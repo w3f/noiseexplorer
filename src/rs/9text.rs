@@ -27,13 +27,15 @@ where B: Borrow<[u8]> + BorrowMut<[u8]>,
 {
     /// Internal convenience method to access the ciphertext immutably 
     pub(crate) fn as_split(&self) -> (&[u8], &[u8], &[u8]) {
-        let (b, mac) = self.buffer.borrow().split_at(self.back);
+        let l = self.buffer.len();
+        let (b, mac) = self.buffer.borrow().split_at(l - self.back);
         let (a, b) = b.split_at(self.front);
         (a, b, mac)
     }
     /// Internal convenience method to access the ciphertext mutably
     pub(crate) fn as_split_mut(&mut self) -> (&mut [u8], &mut [u8], &mut [u8]) {
-        let (b, mac) = self.buffer.borrow_mut().split_at_mut(self.back);
+        let l = self.buffer.len();
+        let (b, mac) = self.buffer.borrow_mut().split_at_mut(l - self.back);
         let (a, b) = b.split_at_mut(self.front);
         (a, b, mac)
     }
